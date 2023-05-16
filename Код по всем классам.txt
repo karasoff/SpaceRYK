@@ -1,0 +1,464 @@
+КЛАСС main:
+
+package org.example;
+
+
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+public class main {
+    public static void main(String[] args) {
+        try{
+            createbot.create();
+        } catch (TelegramApiException e){
+            e.printStackTrace();
+        }
+    }
+}
+
+КЛАСС creatbot:
+
+package org.example;
+
+
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
+public class createbot {
+    public static void create() throws TelegramApiException{
+        TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
+        api.registerBot(new tgbotfunctions());
+    }
+}
+
+КЛАСС quiz:
+
+package org.example;
+
+import java.util.ArrayList;
+
+public class quiz {
+    public ArrayList<String> questions = new ArrayList<>();
+    public quiz(){
+        adding();
+    }
+    public void adding(){
+        questions.add("К основным чертам Web 1.0 относятся?\n" +
+                "1. Статичные веб-страницы предназначенные только для чтения или скачивания примитивных файлов\n" +
+                "2. Пользователи не могут создавать контент в интернете\n" +
+                "3. Данные хранятся в большей части на компьютерах, а не на сервера");
+        questions.add("Какое главное отличие Web 2.0 от Web 1.0?\n" +
+                "1. Появление авторизации, трекеров и авто заполнения на веб-страницах\n" +
+                "2. Пользователи контролируют свои данные, и корпорации не могут удалять контент, который выходит за их правила");
+        questions.add("Верно ли, что в WEB 3.0 в отличие от WEB 2.0 каждый участник сети и сервер, и клиент одновременно?");
+        questions.add("Один из главных недостатков WEB 2.0 - центразизованное хранение данных пользователей?");
+        questions.add("Какое основное преимущество WEB 3.0?");
+        questions.add("В какую эпоху мы живем?");
+        questions.add("С приходом web-3.0 сеть станет более ... ?");
+        questions.add("Кто создал Блокчейн?");
+        questions.add("В WEB 3.0 не характерно использование открытого ПО с исходным кодом?");
+        questions.add("Децентрализация данных, принятие ключевых решений будет осуществлено голосованием пользователей Сети - это определяющая характеристика web-3.0?");
+
+    }
+}
+
+КЛАСС tgbotfunctions:
+
+package org.example;
+
+
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class tgbotfunctions extends TelegramLongPollingBot {
+
+    //Аттрибуты класса
+    ArrayList<String> ids = new ArrayList<>();
+    quiz newQuiz = new quiz();
+
+    //Переопределние метода для получения имени бота
+    @Override
+    public String getBotUsername() {
+        return "RYK_8027_bot";
+    }
+    //Переопределение метода для получения уникального токена бота
+    @Override
+    public String getBotToken(){
+        return "6082711687:AAFmtb5FJrzFegpcQX5-RIzZO2b4aaG8XA0";
+    }
+    //Переопределение реакции бота на сообщение
+    @Override
+    public void onUpdateReceived(Update update) {
+
+
+        //Определние основных параметров сообщения
+        var msg = update.getMessage();
+        var user = msg.getFrom();
+        var id = msg.getChatId().toString();
+        //Объявление письма
+        SendMessage sm = new SendMessage();
+        sm.setChatId(id);
+        sm.enableMarkdown(true);
+        //Если пользователь новый - добавление в ArrayList
+        if (!ids.contains(id)){
+            ids.add(id);
+        }
+
+        if(msg.getText().equals("/start")){
+            sm.setText("Для начала игры пропиши /new");
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        else if(msg.getText().equals("/new")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(0));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("1");
+            keyboardFirstRow.add("2");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+            keyboardSecondRow.add("3");
+            keyboardSecondRow.add("1 и 2");
+
+
+            keyboard.add(keyboardFirstRow);
+            keyboard.add(keyboardSecondRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("1 и 2")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(1));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("1");
+            keyboardFirstRow.add("2");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+
+            keyboard.add(keyboardFirstRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("1")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(2));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Верно");
+            keyboardFirstRow.add("Неверно");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+
+            keyboard.add(keyboardFirstRow);
+
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Верно")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(3));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Да");
+            keyboardFirstRow.add("Нет");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+
+            keyboard.add(keyboardFirstRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Да")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(4));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Персонализированная реклама");
+            keyboardFirstRow.add("Децентрализация сети");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+
+            keyboard.add(keyboardFirstRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Децентрализация сети")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(5));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Web 1.0");
+            keyboardFirstRow.add("Web 2.0");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+            keyboardSecondRow.add("Web 3.0");
+            keyboardSecondRow.add("Переход Web 2.0 — Web 3.0");
+
+
+            keyboard.add(keyboardFirstRow);
+            keyboard.add(keyboardSecondRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Переход Web 2.0 — Web 3.0")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(6));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Демократизированной");
+            keyboardFirstRow.add("Тоталитарной");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+            keyboardSecondRow.add("Либеральной");
+            keyboardSecondRow.add("Классной");
+
+
+            keyboard.add(keyboardFirstRow);
+            keyboard.add(keyboardSecondRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Демократизированной")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(7));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Умный чел");
+            keyboardFirstRow.add("Правительство США");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+            keyboardSecondRow.add("Сатоши Накамота");
+            keyboardSecondRow.add("Павел Дуров");
+
+
+            keyboard.add(keyboardFirstRow);
+            keyboard.add(keyboardSecondRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Сатоши Накамота")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(8));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Да");
+            keyboardFirstRow.add("Нет");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+            keyboard.add(keyboardFirstRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+        else if(msg.getText().equals("Нет")){
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            sm.setReplyMarkup(replyKeyboardMarkup);
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            List<KeyboardRow> keyboard = new ArrayList<>();
+            sm.setText(newQuiz.questions.get(9));
+            KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+            keyboardFirstRow.add("Конечно");
+            keyboardFirstRow.add("Никак нет");
+
+
+            KeyboardRow keyboardSecondRow = new KeyboardRow();
+
+
+
+            keyboard.add(keyboardFirstRow);
+
+            replyKeyboardMarkup.setKeyboard(keyboard);
+
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+        else if (msg.getText().equals("Конечно")){
+            sm.setText("Поздравляем с успешным прохождением теста!");
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        else {
+            sm.setText("К сожалению, ты проиграл =(\nДля начала игры пропиши /new");
+            try{
+                execute(sm);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+
+        for (int i = 0; i < ids.size(); i++) {
+            System.out.println(ids.get(i));
+
+        }
+
+
+
+    }
+
+
+}
